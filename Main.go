@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 type User struct {
@@ -20,6 +21,38 @@ func main() {
 
 	router.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "hellow world")
+	})
+
+	router.GET("/auth/signin", func(c *gin.Context) {
+		cookie := &http.Cookie{
+			Name:       "session_id",
+			Value:      "123",
+			Path:       "/",
+			Domain:     "",
+			Expires:    time.Time{},
+			RawExpires: "",
+			MaxAge:     0,
+			Secure:     false,
+			HttpOnly:   true,
+			Raw:        "",
+			Unparsed:   nil,
+		}
+		http.SetCookie(c.Writer, cookie)
+		c.String(http.StatusOK, "Login successful")
+
+	})
+
+	router.GET("/home", AuthMiddleWare(), func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"data": "home",
+		})
+	})
+
+	router.GET("/before", MiddleWare(), func(c *gin.Context) {
+		request := c.MustGet("request").(string)
+		c.JSON(http.StatusOK, gin.H{
+			"middile_request": request,
+		})
 	})
 
 	router.Use(MiddleWare())
@@ -173,5 +206,24 @@ func MiddleWare() gin.HandlerFunc {
 		c.Set("request", "clinet_request")
 		c.Next()
 		fmt.Println("before middleware")
+	}
+}
+
+func AuthMiddleWare() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if cookie, err := c.Request.Cookie("session_id"); err == nil {
+			value := cookie.Value
+			if value == "123" {
+				c.Next()
+				return
+			}
+
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Unauthorized",
+			})
+
+			c.Abort()
+			return
+		}
 	}
 }
