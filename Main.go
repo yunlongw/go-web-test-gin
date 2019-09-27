@@ -19,33 +19,38 @@ type User struct {
 func main() {
 	router := gin.Default()
 
+	// 同步
+	router.GET("/sync", func(c *gin.Context) {
+		time.Sleep(5 * time.Second)
+		log.Println("Done! in path" + c.Request.URL.Path)
+	})
+
+	// 异步
+	router.GET("/async", func(c *gin.Context) {
+		cCp := c.Copy()
+		go func() {
+			time.Sleep(5 * time.Second)
+			log.Println("Done! in path" + cCp.Request.URL.Path)
+		}()
+	})
+
 	router.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "hellow world")
 	})
 
 	router.GET("/auth/signin", func(c *gin.Context) {
 		cookie := &http.Cookie{
-			Name:       "session_id",
-			Value:      "123",
-			Path:       "/",
-			Domain:     "",
-			Expires:    time.Time{},
-			RawExpires: "",
-			MaxAge:     0,
-			Secure:     false,
-			HttpOnly:   true,
-			Raw:        "",
-			Unparsed:   nil,
+			Name:     "session_id",
+			Value:    "123",
+			Path:     "/",
+			HttpOnly: true,
 		}
 		http.SetCookie(c.Writer, cookie)
 		c.String(http.StatusOK, "Login successful")
-
 	})
 
 	router.GET("/home", AuthMiddleWare(), func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"data": "home",
-		})
+		c.JSON(http.StatusOK, gin.H{"data": "home"})
 	})
 
 	router.GET("/before", MiddleWare(), func(c *gin.Context) {
@@ -197,7 +202,15 @@ func main() {
 		c.String(http.StatusOK, "\nv2 login\n")
 	})
 
-	router.Run(":8000")
+	s := &http.Server{
+		Addr:              ":8000",
+		Handler:           router,
+		ReadTimeout:       10 * time.Second,
+		ReadHeaderTimeout: 10 * time.Second,
+		MaxHeaderBytes:    1 << 20,
+	}
+	s.ListenAndServe()
+	//router.Run(":8000")
 }
 
 func MiddleWare() gin.HandlerFunc {
@@ -213,17 +226,16 @@ func AuthMiddleWare() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if cookie, err := c.Request.Cookie("session_id"); err == nil {
 			value := cookie.Value
+			fmt.Println(value)
 			if value == "123" {
 				c.Next()
 				return
 			}
-
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Unauthorized",
-			})
-
-			c.Abort()
-			return
 		}
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Unauthorized",
+		})
+		c.Abort()
+		return
 	}
 }
