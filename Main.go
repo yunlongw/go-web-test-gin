@@ -17,6 +17,11 @@ type User struct {
 }
 
 func main() {
+	gin.DisableConsoleColor()
+	f, _ := os.Create("gin.log")
+
+	gin.DefaultWriter = io.MultiWriter(f)
+
 	router := gin.Default()
 
 	// 同步
