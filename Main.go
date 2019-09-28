@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"os"
 	"time"
@@ -16,6 +17,14 @@ type User struct {
 	Age      int    `form:"age" json:"age"`
 }
 
+type ProfileForm struct {
+	Name   string                `form:"name" binding:"required"`
+	Avatar *multipart.FileHeader `form:"avatar" binding:"required"`
+
+	// or for multiple files
+	// Avatars []*multipart.FileHeader `form:"avatar" binding:"required"`
+}
+
 func main() {
 	gin.DisableConsoleColor()
 	f, _ := os.Create("logs/gin.log")
@@ -23,6 +32,23 @@ func main() {
 	gin.DefaultWriter = io.MultiWriter(f)
 
 	router := gin.Default()
+
+	router.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
+
+		// your custom format
+		return fmt.Sprintf("%s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",
+			param.ClientIP,
+			param.TimeStamp.Format(time.RFC1123),
+			param.Method,
+			param.Path,
+			param.Request.Proto,
+			param.StatusCode,
+			param.Latency,
+			param.Request.UserAgent(),
+			param.ErrorMessage,
+		)
+	}))
+	router.Use(gin.Recovery())
 
 	// 同步
 	router.GET("/sync", func(c *gin.Context) {
@@ -180,6 +206,7 @@ func main() {
 			fmt.Println("contentType:" + contentType)
 			fmt.Println(user)
 			log.Fatal(err)
+			c.Abort()
 		}
 
 		c.JSON(http.StatusOK, gin.H{
@@ -205,6 +232,63 @@ func main() {
 	v2 := router.Group("/v2")
 	v2.GET("/login", func(c *gin.Context) {
 		c.String(http.StatusOK, "\nv2 login\n")
+	})
+
+	router.POST("/profile", func(c *gin.Context) {
+		// you can bind multipart form with explicit binding declaration:
+		// c.ShouldBindWith(&form, binding.Form)
+		// or you can simply use autobinding with ShouldBind method:
+		var form ProfileForm
+		// in this case proper binding will be automatically selected
+		if err := c.Bind(&form); err != nil {
+			c.String(http.StatusBadRequest, "bad request")
+			return
+		}
+
+		err := c.SaveUploadedFile(form.Avatar, form.Avatar.Filename)
+		if err != nil {
+			c.String(http.StatusInternalServerError, "unknown error")
+			return
+		}
+
+		// db.Save(&form)
+
+		c.String(http.StatusOK, "ok")
+	})
+
+	router.GET("/someJSON", func(c *gin.Context) {
+		names := []string{"lena", "austin", "foo"}
+
+		// Will output  :   while(1);["lena","austin","foo"]
+		c.SecureJSON(http.StatusOK, names)
+	})
+
+	router.GET("/JSONP", func(c *gin.Context) {
+		data := gin.H{
+			"foo": "bar",
+		}
+
+		//callback is x
+		// Will output  :   x({\"foo\":\"bar\"})
+		c.JSONP(http.StatusOK, data)
+	})
+
+	router.GET("/someDataFromReader", func(c *gin.Context) {
+		response, err := http.Get("https://raw.githubusercontent.com/gin-gonic/logo/master/color.png")
+		if err != nil || response.StatusCode != http.StatusOK {
+			c.Status(http.StatusServiceUnavailable)
+			return
+		}
+
+		reader := response.Body
+		contentLength := response.ContentLength
+		contentType := response.Header.Get("Content-Type")
+
+		extraHeaders := map[string]string{
+			"Content-Disposition": `attachment; filename="gopher.png"`,
+		}
+
+		c.DataFromReader(http.StatusOK, contentLength, contentType, reader, extraHeaders)
 	})
 
 	s := &http.Server{
