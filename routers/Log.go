@@ -35,6 +35,6 @@ func Log(r *gin.Engine)  {
 			param.ErrorMessage,
 		)
 	}))
-	r.Use(gin.Recovery())
+
 
 }
