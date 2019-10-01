@@ -9,10 +9,13 @@ import (
 )
 
 var (
-	HttpPort string
-	ReadTimeout time.Duration
+	HttpPort     string
+	ReadTimeout  time.Duration
 	WriteTimeout time.Duration
-	Debug bool
+	Debug        bool
+	RunMode      string
+
+	PageSize int
 )
 
 func init() {
@@ -21,23 +24,25 @@ func init() {
 		log.Fatal("Error loading .env file")
 	}
 
-	HttpPort = os.Getenv("HttpPort")
-	r, _ := strconv.ParseInt(os.Getenv("READ_TIMEOUT"), 10, 64)
-	ReadTimeout = time.Duration(r)  * time.Second
+	PageSize = 15
+	ReadTimeout = 60
+	WriteTimeout = 60
 
-	w, _ := strconv.ParseInt(os.Getenv("WRITE_TIMEOUT"), 10, 64)
-	WriteTimeout = time.Duration(w)  * time.Second
+	RunMode = os.Getenv("RUN_MODE")
+	HttpPort = ":" + os.Getenv("HTTP_PORT")
+	Debug, err = strconv.ParseBool(os.Getenv("APP_DEBUG"))
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	Debug = os.Getenv("CONFIG_DEBUG")
 }
 
-
-func ParseBool(str string) (bool, error) {
+func ParseBool(str string) (bool) {
 	switch str {
 	case "1", "t", "T", "true", "TRUE", "True":
-		return true, nil
+		return true
 	case "0", "f", "F", "false", "FALSE", "False":
-		return false, nil
+		return false
 	}
-	return false, nil
+	return false
 }
