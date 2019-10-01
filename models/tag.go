@@ -36,7 +36,7 @@ func DeleteTag(id int) bool  {
 }
 
 func EditTag(id int, data interface{}) bool  {
-	db.Where("id = ?", id).Updates(data)
+	db.Model(&Tag{}).Where("id = ?", id).Updates(data)
 	return true
 }
 
@@ -47,6 +47,18 @@ func ExistTagByName(name string) bool  {
 	var tag Tag
 	db.Select("id").Where("name = ?", name).First(&tag)
 	if tag.ID >0 {
+		return true
+	}
+	return false
+}
+
+/**
+检测唯一
+*/
+func ExistTagByID(id int) bool  {
+	var tag Tag
+	db.Select("id").Where("id = ?", id).First(&Tag{})
+	if tag.ID > 0 {
 		return true
 	}
 	return false
