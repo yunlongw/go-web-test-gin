@@ -48,6 +48,12 @@ func init()  {
 	}
 
 	db.SingularTable(true)
+	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
 	db.DB().SetMaxIdleConns(10)
+	// SetMaxOpenConns sets the maximum number of open connections to the database.
 	db.DB().SetMaxOpenConns(100)
+}
+
+func CloseDB() {
+	defer db.Close()
 }

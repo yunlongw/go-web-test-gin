@@ -1,21 +1,20 @@
 package v1
 
 import (
+	"github.com/astaxie/beego/validation"
+	"github.com/gin-gonic/gin"
+	"github.com/unknwon/com"
 	"go-web-test/models"
 	"go-web-test/pkg/e"
 	"go-web-test/pkg/setting"
 	"go-web-test/pkg/util"
 	"net/http"
-
-	"github.com/astaxie/beego/validation"
-	"github.com/gin-gonic/gin"
-	"github.com/unknwon/com"
 )
 
 func GetTags(c *gin.Context) {
 	name := c.Query("name")
 
-	maps := make(map[string]interface{})
+	maps := make(map[string]interface{})  //条件
 	data := make(map[string]interface{})
 
 	if name != "" {
