@@ -6,9 +6,9 @@ import (
 	"github.com/unknwon/com"
 	"go-web-test/models"
 	"go-web-test/pkg/e"
+	"go-web-test/pkg/logging"
 	"go-web-test/pkg/setting"
 	"go-web-test/pkg/util"
-	"log"
 	"net/http"
 )
 
@@ -28,8 +28,8 @@ func GetArticle(c *gin.Context) {
 			code = e.ERROR_NOT_EXIST_ARTICLE
 		}
 	}else {
-		for _, err := range valid.Errors{
-			log.Printf("err.key: %s, err.message: %s", err.Key, err.Message)
+		for _, err := range valid.Errors {
+			logging.Info(err.Key, err.Message)
 		}
 	}
 
@@ -72,7 +72,7 @@ func GetArticles(c *gin.Context) {
 
 	} else {
 		for _, err := range valid.Errors {
-			log.Printf("err.key: %s, err.message: %s", err.Key, err.Message)
+			logging.Info(err.Key, err.Message)
 		}
 	}
 
@@ -117,7 +117,7 @@ func AddArticle(c *gin.Context) {
 		}
 	} else {
 		for _, err := range valid.Errors {
-			log.Printf("err.key: %s, err.message: %s", err.Key, err.Message)
+			logging.Info(err.Key, err.Message)
 		}
 	}
 
@@ -181,7 +181,7 @@ func EditArticle(c *gin.Context) {
 		}
 	} else {
 		for _, err := range valid.Errors {
-			log.Printf("err.key: %s, err.message: %s", err.Key, err.Message)
+			logging.Info(err.Key, err.Message)
 		}
 	}
 
@@ -208,7 +208,7 @@ func DeleteArticle(c *gin.Context) {
 		}
 	} else {
 		for _, err := range valid.Errors {
-			log.Printf("err.key: %s, err.message: %s", err.Key, err.Message)
+			logging.Info(err.Key, err.Message)
 		}
 	}
 

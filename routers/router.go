@@ -20,6 +20,7 @@ func InitRouter() *gin.Engine  {
 	//r.LoadHTMLGlob("templates/*")
 
 	gin.DisableConsoleColor()
+
 	//f, _ := os.Create("logs/gin.log")
 	f, err := os.OpenFile("logs/gin.log", os.O_APPEND | os.O_CREATE | os.O_WRONLY, 0644)
 	if err != nil {

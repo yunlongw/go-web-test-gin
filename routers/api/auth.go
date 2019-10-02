@@ -5,8 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-web-test/models"
 	"go-web-test/pkg/e"
+	"go-web-test/pkg/logging"
 	"go-web-test/pkg/util"
-	"log"
 	"net/http"
 )
 
@@ -45,8 +45,8 @@ func GetAuth(c *gin.Context) {
 
 
 	}else {
-		for _, err := range valid.Errors  {
-			log.Println(err.Key, err.Message)
+		for _, err := range valid.Errors {
+			logging.Info(err.Key, err.Message)
 		}
 	}
 
