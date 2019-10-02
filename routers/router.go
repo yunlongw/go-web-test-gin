@@ -3,7 +3,9 @@ package routers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"go-web-test/middleware/jwt"
 	"go-web-test/pkg/setting"
+	"go-web-test/routers/api"
 	v1 "go-web-test/routers/api/v1"
 	"io"
 	"log"
@@ -52,8 +54,10 @@ func InitRouter() *gin.Engine  {
 		})
 	})
 
+	r.POST("/auth", api.GetAuth)
 
 	apiv1 := r.Group("/api/v1")
+	apiv1.Use(jwt.JWT())
 	{
 		apiv1.GET("/tags", v1.GetTags)
 		apiv1.POST("/tags", v1.AddTag)
@@ -68,6 +72,8 @@ func InitRouter() *gin.Engine  {
 		apiv1.DELETE("/articles/:id", v1.DeleteArticle)
 
 	}
+
+
 
 
 

@@ -16,6 +16,7 @@ var (
 	RunMode      string
 
 	PageSize int
+	JwtSecret string
 )
 
 func init() {
@@ -23,26 +24,24 @@ func init() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+	LoadBase()
+	LoadServer()
+	LoadApp()
+}
 
-	PageSize = 15
-	ReadTimeout = 60
-	WriteTimeout = 60
-
-	RunMode = os.Getenv("RUN_MODE")
-	HttpPort = ":" + os.Getenv("HTTP_PORT")
-	Debug, err = strconv.ParseBool(os.Getenv("APP_DEBUG"))
-	if err != nil {
-		log.Fatal(err)
-	}
+func LoadBase()  {
+	Debug, _ = strconv.ParseBool(os.Getenv("APP_DEBUG"))
 
 }
 
-func ParseBool(str string) (bool) {
-	switch str {
-	case "1", "t", "T", "true", "TRUE", "True":
-		return true
-	case "0", "f", "F", "false", "FALSE", "False":
-		return false
-	}
-	return false
+func LoadServer()  {
+	RunMode = os.Getenv("RUN_MODE")
+	HttpPort = ":" + os.Getenv("HTTP_PORT")
+	ReadTimeout = 60
+	WriteTimeout = 60
+}
+
+func LoadApp()  {
+	JwtSecret = os.Getenv("JWT_SECRET")
+	PageSize = 15
 }
