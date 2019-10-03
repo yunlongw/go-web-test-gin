@@ -4,10 +4,8 @@ import (
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
-	"go-web-test/models"
 	"go-web-test/pkg/app"
 	"go-web-test/pkg/e"
-	"go-web-test/pkg/logging"
 	"go-web-test/pkg/setting"
 	"go-web-test/pkg/util"
 	"go-web-test/service/article_service"
@@ -49,45 +47,51 @@ func GetArticle(c *gin.Context) {
 
 
 func GetArticles(c *gin.Context) {
-	data := make(map[string]interface{})
-	maps := make(map[string]interface{})
-
+	appG := app.Gin{C: c}
 	valid := validation.Validation{}
 
-	var state int = -1
-	if arg := c.Query("state"); arg != "" {
+	state := -1
+	if arg := c.PostForm("state"); arg != "" {
 		state = com.StrTo(arg).MustInt()
-		maps["state"] = state
-
-		valid.Range(state, 0, 1, "state").Message("状态只允许0或1")
+		valid.Range(state, 0, 1, "state")
 	}
 
-	var tagId int = -1
-	if arg := c.Query("tag_id"); arg != "" {
+	tagId := -1
+	if arg := c.PostForm("tag_id"); arg != "" {
 		tagId = com.StrTo(arg).MustInt()
-		maps["tag_id"] = tagId
-
-		valid.Min(tagId, 1, "tag_id").Message("标签ID必须大于0")
+		valid.Min(tagId, 1, "tag_id")
 	}
 
-	code := e.INVALID_PARAMS
-	if ! valid.HasErrors() {
-		code = e.SUCCESS
-
-		data["lists"] = models.GetArticles(util.GetPage(c), setting.AppSetting.PageSize, maps)
-		data["total"] = models.GetArticleTotal(maps)
-
-	} else {
-		for _, err := range valid.Errors {
-			logging.Info(err.Key, err.Message)
-		}
+	if valid.HasErrors() {
+		app.MarkErrors(valid.Errors)
+		appG.Response(http.StatusBadRequest, e.INVALID_PARAMS, nil)
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code" : code,
-		"msg" : e.GetMsg(code),
-		"data" : data,
-	})
+	articleService := article_service.Article{
+		TagID:    tagId,
+		State:    state,
+		PageNum:  util.GetPage(c),
+		PageSize: setting.AppSetting.PageSize,
+	}
+
+	total, err := articleService.Count()
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_COUNT_ARTICLE_FAIL, nil)
+		return
+	}
+
+	articles, err := articleService.GetAll()
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_GET_ARTICLES_FAIL, nil)
+		return
+	}
+
+	data := make(map[string]interface{})
+	data["lists"] = articles
+	data["total"] = total
+
+	appG.Response(http.StatusOK, e.SUCCESS, data)
 }
 
 type AddArticleForm struct {
@@ -96,7 +100,7 @@ type AddArticleForm struct {
 	Desc          string `form:"desc" valid:"Required;MaxSize(255)"`
 	Content       string `form:"content" valid:"Required;MaxSize(65535)"`
 	CreatedBy     string `form:"created_by" valid:"Required;MaxSize(100)"`
-	CoverImageUrl string `form:"cover_image_url" valid:"Required;MaxSize(255)"`
+	//CoverImageUrl string `form:"cover_image_url" valid:"Required;MaxSize(255)"`
 	State         int    `form:"state" valid:"Range(0,1)"`
 }
 
@@ -129,7 +133,7 @@ func AddArticle(c *gin.Context) {
 		Title:         form.Title,
 		Desc:          form.Desc,
 		Content:       form.Content,
-		CoverImageUrl: form.CoverImageUrl,
+		//CoverImageUrl: form.CoverImageUrl,
 		State:         form.State,
 	}
 	if err := articleService.Add(); err != nil {

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/unknwon/com"
 	"go-web-test/models"
+	"go-web-test/pkg/gredis"
 	"go-web-test/pkg/setting"
 	"go-web-test/routers"
 	"net/http"
@@ -14,6 +15,7 @@ import (
 func init()  {
 	setting.Setup()
 	models.SetUp()
+	gredis.Setup()
 }
 
 func main() {

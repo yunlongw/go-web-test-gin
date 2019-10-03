@@ -4,7 +4,6 @@ import (
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
-	"go-web-test/models"
 	"go-web-test/pkg/app"
 	"go-web-test/pkg/e"
 	"go-web-test/pkg/setting"
@@ -14,30 +13,34 @@ import (
 )
 
 func GetTags(c *gin.Context) {
+	appG := app.Gin{C: c}
 	name := c.Query("name")
-
-	maps := make(map[string]interface{})  //条件
-	data := make(map[string]interface{})
-
-	if name != "" {
-		maps["name"] = name
-	}
-
-	var state int = -1
+	state := -1
 	if arg := c.Query("state"); arg != "" {
 		state = com.StrTo(arg).MustInt()
-		maps["state"] = state
 	}
 
-	code := e.SUCCESS
+	tagService := tag_service.Tag{
+		Name:     name,
+		State:    state,
+		PageNum:  util.GetPage(c),
+		PageSize: setting.AppSetting.PageSize,
+	}
+	tags, err := tagService.GetAll()
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_GET_TAGS_FAIL, nil)
+		return
+	}
 
-	data["lists"] = models.GetTags(util.GetPage(c), setting.AppSetting.PageSize, maps)
-	data["total"] = models.GetTagTotal(maps)
+	count, err := tagService.Count()
+	if err != nil {
+		appG.Response(http.StatusInternalServerError, e.ERROR_COUNT_TAG_FAIL, nil)
+		return
+	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"code": code,
-		"msg":  e.GetMsg(code),
-		"data": data,
+	appG.Response(http.StatusOK, e.SUCCESS, map[string]interface{}{
+		"lists": tags,
+		"total": count,
 	})
 }
 

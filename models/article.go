@@ -32,14 +32,22 @@ func ExistArticleByID(id int) (bool, error)  {
 	return false, nil
 }
 
-func GetArticleTotal(maps interface{}) (count int) {
-	db.Model(&Article{}).Where(maps).Count(&count)
-	return
+func GetArticleTotal(maps interface{}) ( int, error) {
+	var count int
+	if err := db.Model(&Article{}).Where(maps).Count(&count).Error; err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }
 
-func GetArticles(pageNum int, pageSize int, maps interface{}) (articles []Article)  {
-	db.Preload("Tag").Where(maps).Offset(pageNum).Limit(pageSize).Find(&articles)
-	return
+func GetArticles(pageNum int, pageSize int, maps interface{}) ([]*Article, error) {
+	var articles []*Article
+	err := db.Preload("Tag").Where(maps).Offset(pageNum).Order("id desc").Limit(pageSize).Find(&articles).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	return articles, nil
 }
 
 func GetArticle(id int) (*Article,  error)  {

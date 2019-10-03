@@ -1,5 +1,7 @@
 package models
 
+import "github.com/jinzhu/gorm"
+
 type Tag struct {
 	Model
 
@@ -9,15 +11,32 @@ type Tag struct {
 	State      int    `json:"state"`
 }
 
-func GetTags(pageNum int, pageSize int, maps interface{}) (tags []Tag) {
-	db.Where(maps).Offset(pageNum).Limit(pageSize).Find(&tags)
+func GetTags(pageNum int, pageSize int, maps interface{}) ([]Tag, error) {
+	var (
+		tags []Tag
+		err  error
+	)
 
-	return
+	if pageSize > 0 && pageNum > 0 {
+		err = db.Where(maps).Find(&tags).Offset(pageNum).Limit(pageSize).Error
+	} else {
+		err = db.Where(maps).Find(&tags).Error
+	}
+
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	return tags, nil
 }
 
-func GetTagTotal(maps interface{}) (count int) {
-	db.Model(&Tag{}).Where(maps).Count(&count)
-	return
+func GetTagTotal(maps interface{}) (int, error) {
+	var count int
+	if err := db.Model(&Tag{}).Where(maps).Count(&count).Error; err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }
 
 func AddTag(name string, state int, createdBy string) error {
@@ -52,7 +71,7 @@ func ExistTagByName(name string) (bool, error) {
 	var tag Tag
 	err := db.Select("id").Where("name = ?", name).First(&tag).Error
 
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return false, err
 	}
 
@@ -69,7 +88,7 @@ func ExistTagByID(id int) (bool, error) {
 	var tag Tag
 	err := db.Select("id").Where("id = ?", id).First(&tag).Error
 	if err != nil {
-		return false, err
+			return false, err
 	}
 	if tag.ID > 0 {
 		return true, nil
