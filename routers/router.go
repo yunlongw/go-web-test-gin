@@ -47,7 +47,7 @@ func InitRouter() *gin.Engine  {
 
 	r.Use(gin.Recovery())
 
-	gin.SetMode(setting.RunMode)
+	gin.SetMode(setting.ServerSetting.RunMode)
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{

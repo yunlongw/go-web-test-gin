@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"go-web-test/pkg/setting"
 	"log"
-	"os"
 	"time"
 )
 
@@ -18,19 +18,19 @@ type Model struct {
 	DeletedOn  int `json:"deleted_on"`
 }
 
-func init() {
+func SetUp() {
 
 	var (
 		err                                               error
 		dbType, dbName, user, password, host, tablePrefix string
 	)
 
-	dbType = os.Getenv("DB_CONNECTION")
-	dbName = os.Getenv("DB_DATABASE")
-	user = os.Getenv("DB_USERNAME")
-	password = os.Getenv("DB_PASSWORD")
-	host = os.Getenv("DB_HOST")
-	tablePrefix = os.Getenv("TABLE_PREFIX")
+	dbType = setting.DatabaseSetting.Type
+	dbName = setting.DatabaseSetting.Name
+	user = setting.DatabaseSetting.User
+	password = setting.DatabaseSetting.Password
+	host =setting.DatabaseSetting.Host
+	tablePrefix = setting.DatabaseSetting.TablePrefix
 
 	db, err = gorm.Open(dbType, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
 		user,

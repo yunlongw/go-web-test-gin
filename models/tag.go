@@ -20,13 +20,17 @@ func GetTagTotal(maps interface{}) (count int) {
 	return
 }
 
-func AddTag(name string, state int, createdBy string) bool {
-	db.Create(&Tag{
+func AddTag(name string, state int, createdBy string) error {
+	tag := Tag{
 		Name:      name,
 		State:     state,
 		CreatedBy: createdBy,
-	})
-	return true
+	}
+
+	if err := db.Create(&tag).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func DeleteTag(id int) bool {
@@ -34,33 +38,43 @@ func DeleteTag(id int) bool {
 	return true
 }
 
-func EditTag(id int, data interface{}) bool {
-	db.Model(&Tag{}).Where("id = ?", id).Updates(data)
-	return true
+func EditTag(id int, data interface{}) error {
+	if err:= db.Model(&Tag{}).Where("id = ?", id).Updates(data).Error; err != nil{
+		return err
+	}
+	return nil
 }
 
 /**
 检测唯一
 */
-func ExistTagByName(name string) bool {
+func ExistTagByName(name string) (bool, error) {
 	var tag Tag
-	db.Select("id").Where("name = ?", name).First(&tag)
-	if tag.ID > 0 {
-		return true
+	err := db.Select("id").Where("name = ?", name).First(&tag).Error
+
+	if err != nil {
+		return false, err
 	}
-	return false
+
+	if tag.ID > 0 {
+		return true, nil
+	}
+	return false, nil
 }
 
 /**
 检测唯一
 */
-func ExistTagByID(id int) bool {
+func ExistTagByID(id int) (bool, error) {
 	var tag Tag
-	db.Select("id").Where("id = ?", id).First(&tag)
-	if tag.ID > 0 {
-		return true
+	err := db.Select("id").Where("id = ?", id).First(&tag).Error
+	if err != nil {
+		return false, err
 	}
-	return false
+	if tag.ID > 0 {
+		return true, nil
+	}
+	return false, nil
 }
 
 func CleanAllTag() bool {
