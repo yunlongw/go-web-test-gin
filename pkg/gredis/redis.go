@@ -19,6 +19,7 @@ func Setup() error {
 			if err != nil {
 				return nil, err
 			}
+			// 如果密码不为空则进行 auth 认证
 			if setting.RedisSetting.Password != "" {
 				if _, err := c.Do("AUTH", setting.RedisSetting.Password); err != nil {
 					c.Close()

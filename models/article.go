@@ -21,6 +21,7 @@ type Article struct {
 func ExistArticleByID(id int) (bool, error)  {
 	var article Article
 	err := db.Select("id").Where("id = ?", id).First(&article).Error
+	//err 不等于空 并且  err 的错误类型不能为找不到数据 ， 输出异常
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return false, err
 	}

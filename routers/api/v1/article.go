@@ -18,7 +18,7 @@ func GetArticle(c *gin.Context) {
 	appG := app.Gin{c}
 
 	valid := validation.Validation{}
-	valid.Min(id, 1, "io").Message("ID 必须大于 0")
+	valid.Min(id, 1, "id").Message("ID 必须大于 0")
 
 	if valid.HasErrors() {
 		app.MarkErrors(valid.Errors)
@@ -29,10 +29,12 @@ func GetArticle(c *gin.Context) {
 	articleService := article_service.Article{ID:id}
 	exists, err := articleService.ExistByID()
 	if err != nil {
+		// 输出数据库查询错误
 		appG.Response(http.StatusInternalServerError, e.ERROR_AUTH_CHECK_TOKEN_FAIL, nil)
 	}
 
 	if !exists {
+		// 数据不存在
 		appG.Response(http.StatusOK, e.ERROR_NOT_EXIST_ARTICLE, nil)
 		return
 	}
