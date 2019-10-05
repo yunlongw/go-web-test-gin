@@ -2,7 +2,7 @@ package util
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"go-web-test/pkg/setting"
+	"go-web-test-gin/pkg/setting"
 	"time"
 )
 

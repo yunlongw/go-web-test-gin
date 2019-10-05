@@ -3,7 +3,7 @@ package util
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
-	"go-web-test/pkg/setting"
+	"go-web-test-gin/pkg/setting"
 )
 
 

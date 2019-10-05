@@ -3,7 +3,7 @@ package app
 import (
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
-	"go-web-test/pkg/e"
+	"go-web-test-gin/pkg/e"
 	"net/http"
 )
 /**

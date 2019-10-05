@@ -4,12 +4,12 @@ import (
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
-	"go-web-test/pkg/app"
-	"go-web-test/pkg/e"
-	"go-web-test/pkg/setting"
-	"go-web-test/pkg/util"
-	"go-web-test/service/article_service"
-	"go-web-test/service/tag_service"
+	"go-web-test-gin/pkg/app"
+	"go-web-test-gin/pkg/e"
+	"go-web-test-gin/pkg/setting"
+	"go-web-test-gin/pkg/util"
+	"go-web-test-gin/service/article_service"
+	"go-web-test-gin/service/tag_service"
 	"net/http"
 )
 

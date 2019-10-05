@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
-	"go-web-test/pkg/setting"
+	"go-web-test-gin/pkg/setting"
 	"log"
 	"time"
 )

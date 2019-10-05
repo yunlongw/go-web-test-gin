@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/unknwon/com"
-	"go-web-test/models"
-	"go-web-test/pkg/gredis"
-	"go-web-test/pkg/setting"
-	"go-web-test/routers"
+	"go-web-test-gin/models"
+	"go-web-test-gin/pkg/gredis"
+	"go-web-test-gin/pkg/setting"
+	"go-web-test-gin/routers"
 	"net/http"
 )
 

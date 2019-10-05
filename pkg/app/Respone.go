@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-web-test/pkg/e"
+	"go-web-test-gin/pkg/e"
 )
 
 type Gin struct {

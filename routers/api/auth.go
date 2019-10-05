@@ -3,10 +3,10 @@ package api
 import (
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
-	"go-web-test/models"
-	"go-web-test/pkg/e"
-	"go-web-test/pkg/logging"
-	"go-web-test/pkg/util"
+	"go-web-test-gin/models"
+	"go-web-test-gin/pkg/e"
+	"go-web-test-gin/pkg/logging"
+	"go-web-test-gin/pkg/util"
 	"net/http"
 )
 

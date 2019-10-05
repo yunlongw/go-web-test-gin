@@ -1,4 +1,4 @@
-module go-web-test
+module go-web-test-gin
 
 go 1.12
 
@@ -9,7 +9,7 @@ require (
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-ini/ini v1.48.0
 	github.com/jinzhu/gorm v1.9.11
-	github.com/joho/godotenv v1.3.0
+	github.com/joho/godotenv v1.3.0 // indirect
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/robfig/cron v1.2.0
 	github.com/unknwon/com v1.0.1

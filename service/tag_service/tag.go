@@ -2,10 +2,10 @@ package tag_service
 
 import (
 	"encoding/json"
-	"go-web-test/models"
-	"go-web-test/pkg/gredis"
-	"go-web-test/pkg/logging"
-	"go-web-test/service/cache_service"
+	"go-web-test-gin/models"
+	"go-web-test-gin/pkg/gredis"
+	"go-web-test-gin/pkg/logging"
+	"go-web-test-gin/service/cache_service"
 )
 
 type Tag struct {

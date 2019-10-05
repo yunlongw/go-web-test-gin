@@ -3,7 +3,7 @@ package gredis
 import (
 	"encoding/json"
 	"github.com/garyburd/redigo/redis"
-	"go-web-test/pkg/setting"
+	"go-web-test-gin/pkg/setting"
 	"time"
 )
 

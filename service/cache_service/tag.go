@@ -1,7 +1,7 @@
 package cache_service
 
 import (
-	"go-web-test/pkg/e"
+	"go-web-test-gin/pkg/e"
 	"strconv"
 	"strings"
 )

@@ -2,8 +2,8 @@ package jwt
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-web-test/pkg/e"
-	"go-web-test/pkg/util"
+	"go-web-test-gin/pkg/e"
+	"go-web-test-gin/pkg/util"
 	"net/http"
 	"time"
 )
