@@ -34,7 +34,7 @@ func (a *Article) Get() (*models.Article, error) {
 		if err != nil {
 			logging.Info(err)
 		} else {
-			json.Unmarshal(data, &cacheArticle)
+			_ = json.Unmarshal(data, &cacheArticle)
 			return cacheArticle, nil
 		}
 	}
@@ -44,7 +44,7 @@ func (a *Article) Get() (*models.Article, error) {
 		return nil, err
 	}
 
-	gredis.Set(key, article, 3600)
+	_ = gredis.Set(key, article, 3600)
 	return article, nil
 }
 
@@ -108,7 +108,10 @@ func (a *Article) GetAll() ([]*models.Article, error) {
 		if err != nil {
 			logging.Info(err)
 		} else {
-			json.Unmarshal(data, &cacheArticles)
+			err = json.Unmarshal(data, &cacheArticles)
+			if err != nil {
+				return nil, err
+			}
 			return cacheArticles, nil
 		}
 	}
@@ -118,7 +121,10 @@ func (a *Article) GetAll() ([]*models.Article, error) {
 		return nil, err
 	}
 
-	gredis.Set(key, articles, 3600)
+	err = gredis.Set(key, articles, 3600)
+	if err != nil {
+	   return nil, err
+	}
 	return articles, nil
 }
 

@@ -15,7 +15,7 @@ import (
 
 func GetArticle(c *gin.Context) {
 	id := com.StrTo(c.Param("id")).MustInt()
-	appG := app.Gin{c}
+	appG := app.Gin{C : c}
 
 	valid := validation.Validation{}
 	valid.Min(id, 1, "id").Message("ID 必须大于 0")

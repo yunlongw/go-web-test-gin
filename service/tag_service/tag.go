@@ -63,7 +63,10 @@ func (t *Tag) GetAll() ([]models.Tag, error) {
 		if err != nil {
 			logging.Info(err)
 		} else {
-			json.Unmarshal(data, &cacheTags)
+			err = json.Unmarshal(data, &cacheTags)
+			if err != nil {
+				return nil, err
+			}
 			return cacheTags, nil
 		}
 	}
@@ -73,7 +76,10 @@ func (t *Tag) GetAll() ([]models.Tag, error) {
 		return nil, err
 	}
 
-	gredis.Set(key, tags, 3600)
+	err = gredis.Set(key, tags, 3600)
+	if err != nil {
+		return nil, err
+	}
 	return tags, nil
 }
 
