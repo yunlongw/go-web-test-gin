@@ -18,9 +18,9 @@ type Article struct {
 	State         int
 	CreatedBy     string
 	ModifiedBy    string
-
-	PageNum  int
-	PageSize int
+	Uid           int
+	PageNum       int
+	PageSize      int
 }
 
 func (a *Article) Get() (*models.Article, error) {
@@ -77,6 +77,7 @@ func (a *Article) Add() interface{} {
 		"created_by":      a.CreatedBy,
 		"cover_image_url": a.CoverImageUrl,
 		"state":           a.State,
+		"uid":             a.Uid,
 	}
 
 	if err := models.AddArticle(article); err != nil {
@@ -123,7 +124,7 @@ func (a *Article) GetAll() ([]*models.Article, error) {
 
 	err = gredis.Set(key, articles, 3600)
 	if err != nil {
-	   return nil, err
+		return nil, err
 	}
 	return articles, nil
 }

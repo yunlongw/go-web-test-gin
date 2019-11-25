@@ -55,7 +55,10 @@ func InitRouter() *gin.Engine  {
 		})
 	})
 
-	r.POST("/auth", api.GetAuth)
+
+	r.POST("/auth", api.GetAuth)// 登录
+	r.POST("/register", v1.Register) //注册
+
 
 	apiv1 := r.Group("/api/v1")
 	apiv1.Use(jwt.JWT())

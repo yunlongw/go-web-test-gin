@@ -1,6 +1,6 @@
 package e
 
-var MsgFlags  = map[int]string{
+var MsgFlags = map[int]string{
 	SUCCESS:                         "ok",
 	ERROR:                           "fail",
 	INVALID_PARAMS:                  "请求参数错误",
@@ -30,9 +30,11 @@ var MsgFlags  = map[int]string{
 	ERROR_UPLOAD_SAVE_IMAGE_FAIL:    "保存图片失败",
 	ERROR_UPLOAD_CHECK_IMAGE_FAIL:   "检查图片失败",
 	ERROR_UPLOAD_CHECK_IMAGE_FORMAT: "校验图片错误，图片格式或大小有问题",
+	ERROR_EXIST_MEMBER:              "该用户已经存在",
+	ERROR_REGISTER_MEMBER:           "用户注册失败",
 }
 
-func GetMsg(code int) string  {
+func GetMsg(code int) string {
 	msg, ok := MsgFlags[code]
 	if ok {
 		return msg
