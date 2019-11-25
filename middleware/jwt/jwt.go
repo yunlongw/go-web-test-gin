@@ -8,6 +8,9 @@ import (
 	"time"
 )
 
+var Claims *util.Claims
+var err error
+
 func JWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var code int
@@ -19,10 +22,10 @@ func JWT() gin.HandlerFunc {
 		if token == "" {
 			code = e.INVALID_PARAMS
 		}else {
-			claims, err := util.ParseToken(token)  // 验证token
+			Claims, err = util.ParseToken(token)  // 验证token
 			if err != nil {
 				code = e.ERROR_AUTH_CHECK_TOKEN_FAIL
-			}else if time.Now().Unix() > claims.ExpiresAt{   // 超时检测
+			}else if time.Now().Unix() > Claims.ExpiresAt{   // 超时检测
 				code = e.ERROR_AUTH_CHECK_TOKEN_TIMEOUT
 			}
 		}

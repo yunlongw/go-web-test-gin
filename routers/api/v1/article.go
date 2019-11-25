@@ -4,6 +4,7 @@ import (
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
 	"github.com/unknwon/com"
+	"go-web-test-gin/middleware/jwt"
 	"go-web-test-gin/pkg/app"
 	"go-web-test-gin/pkg/e"
 	"go-web-test-gin/pkg/setting"
@@ -111,8 +112,6 @@ func AddArticle(c *gin.Context) {
 		form AddArticleForm
 	)
 
-	token := c.GetHeader("token")
-	claims, err := util.ParseToken(token)
 
 	httpCode, errCode := app.BindAndValid(c, &form)
 	if errCode != e.SUCCESS {
@@ -139,7 +138,7 @@ func AddArticle(c *gin.Context) {
 		Content: form.Content,
 		//CoverImageUrl: form.CoverImageUrl,
 		State: form.State,
-		Uid:   claims.Uid,
+		Uid:   jwt.Claims.Uid,
 	}
 	if err := articleService.Add(); err != nil {
 		appG.Response(http.StatusInternalServerError, e.ERROR_ADD_ARTICLE_FAIL, nil)
