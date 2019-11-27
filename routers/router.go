@@ -3,7 +3,9 @@ package routers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/unknwon/com"
 	"go-web-test-gin/middleware/jwt"
+	"go-web-test-gin/pkg/logging"
 	"go-web-test-gin/pkg/setting"
 	"go-web-test-gin/routers/api"
 	v1 "go-web-test-gin/routers/api/v1"
@@ -13,6 +15,24 @@ import (
 	"os"
 	"time"
 )
+
+func RunServer() error {
+	r := InitRouter()
+	s := &http.Server{
+		Addr:           ":" + com.ToStr(setting.ServerSetting.HttpPort), //监听的TCP地址
+		Handler:        r,                                               //http句柄，实质为ServeHTTP，用于处理程序响应HTTP请求
+		ReadTimeout:    setting.ServerSetting.ReadTimeout,               //允许读取的最大时间
+		WriteTimeout:   setting.ServerSetting.WriteTimeout,              //允许写入的最大时间
+		MaxHeaderBytes: 1 << 20,                                         //请求头的最大字节数
+	}
+
+	err := s.ListenAndServe()
+	if err != nil {
+		logging.Error(err)
+		return err
+	}
+	return err
+}
 
 func InitRouter() *gin.Engine  {
 	r := gin.New()
@@ -76,11 +96,6 @@ func InitRouter() *gin.Engine  {
 		apiv1.DELETE("/articles/:id", v1.DeleteArticle)
 
 	}
-
-
-
-
-
 
 	return r
 }

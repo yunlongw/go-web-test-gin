@@ -6,7 +6,6 @@ import (
 	"time"
 )
 
-
 type App struct {
 	JwtSecret string
 	PageSize  int
@@ -58,6 +57,12 @@ type Redis struct {
 	IdleTimeout time.Duration
 }
 
+type Queue struct {
+	DefaultQueue string
+}
+
+var QueueSetting = &Queue{}
+
 var RedisSetting = &Redis{}
 
 var cfg *ini.File
@@ -74,6 +79,7 @@ func Setup() {
 	mapTo("server", ServerSetting)
 	mapTo("database", DatabaseSetting)
 	mapTo("redis", RedisSetting)
+	mapTo("queue", QueueSetting)
 
 	AppSetting.ImageMaxSize = AppSetting.ImageMaxSize * 1024 * 1024
 	ServerSetting.ReadTimeout = ServerSetting.ReadTimeout * time.Second
@@ -82,9 +88,7 @@ func Setup() {
 
 }
 
-
-
-func mapTo(section string, v interface{}){
+func mapTo(section string, v interface{}) {
 	err := cfg.Section(section).MapTo(v)
 	if err != nil {
 		log.Fatalf("Cfg.MapTo %s err: %v", section, err)
