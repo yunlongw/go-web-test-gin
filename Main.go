@@ -41,7 +41,7 @@ func main() {
 		{
 			Name:  "server",
 			Usage: "server is running",
-			Action: func() error {
+			Action: func(c *cli.Context) error {
 				if err := routers.RunServer(); err != nil {
 					return cli.NewExitError(err.Error(), 1)
 				}

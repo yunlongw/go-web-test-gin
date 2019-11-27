@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"github.com/RichardKnop/machinery/v1/tasks"
 	"github.com/astaxie/beego/validation"
 	"github.com/gin-gonic/gin"
@@ -80,11 +79,13 @@ func loginTask() {
 				Value: 1,
 			},
 		},
+		RetryCount:   2,
+		RetryTimeout: 3,
 	}
 
 	asyncResult, err := queue.MServer.SendTask(signature)
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Println(asyncResult)
+	logging.Info(asyncResult)
 }

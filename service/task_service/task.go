@@ -17,7 +17,10 @@ func LongRunningTask() error {
 	return nil
 }
 
-func LoginTask() error {
-	log.INFO.Print("login success")
-	return nil
+func LoginTask(args ...int64) (int64, error) {
+	sum := int64(0)
+	for _, arg := range args {
+		sum += arg
+	}
+	return sum, nil
 }
