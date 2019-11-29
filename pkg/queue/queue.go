@@ -9,30 +9,38 @@ import (
 )
 
 var (
-	MServer *machinery.Server
 	cnf     *config.Config
-	err     error
 	tasks   map[string]interface{}
 )
 
-func Setup() error {
+const consumerTag = "machinery_worker"
+const concurrency = 10
 
+func init() {
 	tasks = map[string]interface{}{
-		"login":               task_service.LoginTask,
+		"login":             task_service.LoginTask,
 		"long_running_task": task_service.LongRunningTask,
 	}
+}
+
+/**
+返回 queue 的 server
+ */
+func StartServer() (servers *machinery.Server, err error) {
 
 	configPath := conf.GetConfigYml()
+
 	if cnf, err = loadConfig(configPath); err != nil {
 		logging.Error(err)
-		return err
-	}
-	if MServer, err = machinery.NewServer(cnf); err != nil {
-		logging.Error(err)
-		return err
+		return nil, err
 	}
 
-	return nil
+	if servers, err = machinery.NewServer(cnf); err != nil {
+		logging.Error(err)
+		return nil, err
+	}
+
+	return servers, servers.RegisterTasks(tasks)
 }
 
 func loadConfig(configPath string) (*config.Config, error) {
@@ -42,17 +50,23 @@ func loadConfig(configPath string) (*config.Config, error) {
 	return config.NewFromEnvironment(true)
 }
 
+
+/**
+创建 worker 负责处理队列中的内容
+ */
 func RunWorker() error {
-	err = MServer.RegisterTasks(tasks)
+	servers, err := StartServer()
 	if err != nil {
 		logging.Error(err)
 		return err
 	}
-	workers := MServer.NewWorker("worker_test", 10)
+
+	workers := servers.NewWorker(consumerTag, concurrency)
 	err = workers.Launch()
 	if err != nil {
 		logging.Error(err)
 		return err
 	}
+
 	return nil
 }

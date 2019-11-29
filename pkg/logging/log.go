@@ -30,7 +30,7 @@ const (
 
 func init()  {
 	filePath := GetLogFileFullPath()
-	F = openLogFile(filePath)
+	F = OpenLogFile(filePath)
 
 	logger = log.New(F, DefaultPrefix, log.LstdFlags)
 }

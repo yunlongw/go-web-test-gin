@@ -19,10 +19,6 @@ func init() {
 	if err != nil {
 		logging.Error(err)
 	}
-	err = queue.Setup()
-	if err != nil {
-		logging.Error(err)
-	}
 }
 
 func main() {

@@ -82,8 +82,11 @@ func loginTask() {
 		RetryCount:   2,
 		RetryTimeout: 3,
 	}
-
-	asyncResult, err := queue.MServer.SendTask(signature)
+	server, err := queue.StartServer()
+	if err != nil {
+	   logging.Error(err)
+	}
+	asyncResult, err := server.SendTask(signature)
 	if err != nil {
 		panic(err.Error())
 	}

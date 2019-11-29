@@ -25,7 +25,7 @@ func GetLogFileFullPath() string  {
 	return fmt.Sprintf("%s%s", prefixPath, suffixPath)
 }
 
-func openLogFile(filePath string) *os.File  {
+func OpenLogFile(filePath string) *os.File  {
 	_, err := os.Stat(filePath)
 	switch {
 	case os.IsNotExist(err):

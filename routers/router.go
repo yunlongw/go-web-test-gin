@@ -18,6 +18,9 @@ import (
 
 func RunServer() error {
 	r := InitRouter()
+	var RootPath, _ = os.Getwd()
+	log.Println(RootPath)
+
 	s := &http.Server{
 		Addr:           ":" + com.ToStr(setting.ServerSetting.HttpPort), //监听的TCP地址
 		Handler:        r,                                               //http句柄，实质为ServeHTTP，用于处理程序响应HTTP请求
@@ -41,11 +44,7 @@ func InitRouter() *gin.Engine  {
 
 	gin.DisableConsoleColor()
 
-	//f, _ := os.Create("logs/gin.log")
-	f, err := os.OpenFile("logs/gin.log", os.O_APPEND | os.O_CREATE | os.O_WRONLY, 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
+	f := logging.OpenLogFile("runtime/gin.log")
 	gin.DefaultWriter = io.MultiWriter(f)
 
 	//r.Use(gin.LoggerWithWriter(handle, ""))
