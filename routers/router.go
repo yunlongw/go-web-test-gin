@@ -10,16 +10,12 @@ import (
 	"go-web-test-gin/routers/api"
 	v1 "go-web-test-gin/routers/api/v1"
 	"io"
-	"log"
 	"net/http"
-	"os"
 	"time"
 )
 
 func RunServer() error {
 	r := InitRouter()
-	var RootPath, _ = os.Getwd()
-	log.Println(RootPath)
 
 	s := &http.Server{
 		Addr:           ":" + com.ToStr(setting.ServerSetting.HttpPort), //监听的TCP地址
